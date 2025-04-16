@@ -25,6 +25,14 @@ class S3FSOpener(Opener):
             if "strict" in parse_result.params
             else True
         )
+        use_ssl = (
+            parse_result.params['use_ssl'] == '1'
+            if 'use_ssl' in parse_result.params
+            else True
+        )
+        verify = parse_result.params.get('verify', None)
+        if verify == '0':
+            verify = False
         s3fs = S3FS(
             bucket_name,
             dir_path=dir_path or "/",
@@ -34,5 +42,7 @@ class S3FSOpener(Opener):
             acl=parse_result.params.get("acl", None),
             cache_control=parse_result.params.get("cache_control", None),
             strict=strict,
+            use_ssl=use_ssl,
+            verify=verify,
         )
         return s3fs

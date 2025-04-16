@@ -214,6 +214,13 @@ class S3FS(FS):
         PyFilesystem specification exactly. Set to ``False`` to disable
         validation of destination paths which may speed up uploads /
         downloads.
+    :param bool use_ssl: Whether or not to use SSL. The default is ``True``.
+    :param bool or str verify: Whether or not to verify SSL certificates.  By
+        default SSL certificates are verified. Set to ``False`` to disable
+        verification of SSL certificates. To use a different CA cert bundle
+        than the one used by botocore, set this parameter to a string that is
+        the path to a CA cert bundle. The default is ``None``, which inherits
+        the default behavior of botocore.
     :param str cache_control: Sets the 'Cache-Control' header for uploads.
     :param str acl: Sets the Access Control List header for uploads.
     :param dict upload_args: A dictionary for additional upload arguments.
@@ -273,6 +280,8 @@ class S3FS(FS):
         region=None,
         delimiter="/",
         strict=True,
+        use_ssl=True,
+        verify=None,
         cache_control=None,
         acl=None,
         upload_args=None,
@@ -294,6 +303,8 @@ class S3FS(FS):
         self.region = region
         self.delimiter = delimiter
         self.strict = strict
+        self.use_ssl = use_ssl
+        self.verify = verify
         self._tlocal = threading.local()
         if cache_control or acl:
             upload_args = upload_args or {}
@@ -371,6 +382,8 @@ class S3FS(FS):
                 aws_secret_access_key=self.aws_secret_access_key,
                 aws_session_token=self.aws_session_token,
                 endpoint_url=self.endpoint_url,
+                use_ssl=self.use_ssl,
+                verify=self.verify,
             )
         return self._tlocal.s3
 
@@ -384,6 +397,8 @@ class S3FS(FS):
                 aws_secret_access_key=self.aws_secret_access_key,
                 aws_session_token=self.aws_session_token,
                 endpoint_url=self.endpoint_url,
+                use_ssl=self.use_ssl,
+                verify=self.verify,
             )
         return self._tlocal.client
 
